@@ -1,7 +1,11 @@
 // app/layout.tsx
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Geist } from "next/font/google";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+
 
 // 1. Font Optimization: Next.js downloads this font at build time. 
 // Result: Zero layout shift (CLS) and no external network calls to Google Fonts.
@@ -22,7 +26,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={cn("font-sans", geist.variable)}>
       {/* We apply the optimized font and some base Tailwind classes to the body */}
       <body className={`${inter.variable} font-sans antialiased bg-slate-50 text-slate-900`}>
         {children}
