@@ -2,7 +2,7 @@
 
 import { useChat } from "@ai-sdk/react";
 import { UIMessage } from "ai";
-import { useState, useEffect } from "react";
+import { useState, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,7 +18,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useSearchParams } from "next/navigation";
 
-export default function ChatPage() {
+const ChatPageContent = () => {
   const searchParams = useSearchParams();
   const [sourceText, setSourceText] = useState<string>("");
   const [chatInput, setChatInput] = useState<string>("");
@@ -240,3 +240,18 @@ export default function ChatPage() {
     </div>
   );
 }
+
+const ChatPage = () => {
+return (
+    <Suspense fallback={
+      <div className="container mx-auto max-w-6xl p-4 md:p-8 min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <span className="ml-2 text-slate-500">Loading chat configuration...</span>
+      </div>
+    }>
+      <ChatPageContent />
+    </Suspense>
+  );
+}
+
+export default ChatPage
