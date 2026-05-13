@@ -73,28 +73,33 @@ export default function ChatPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
         {/* LEFT COLUMN */}
-        <Card className="md:col-span-1 h-[600px] flex flex-col">
-          <CardHeader>
+        <Card className="md:col-span-1 h-[600px] flex flex-col shadow-sm overflow-hidden">
+          <CardHeader className="shrink-0">
             <CardTitle>Source Content</CardTitle>
             <CardDescription>Paste your text here.</CardDescription>
           </CardHeader>
-          <CardContent className="flex-1 flex flex-col overflow-hidden p-6 pt-0">
-            <Textarea
-              value={sourceText}
-              onChange={(e) => setSourceText(e.target.value)}
-              placeholder="Paste your long text here..."
-              className="flex-1 resize-none bg-slate-50 border-slate-200 p-4 focus-visible:ring-blue-500"
-            />
+
+          <CardContent className="flex-1 flex flex-col overflow-hidden p-4 gap-4">
+            <div className="flex-1 overflow-hidden rounded-xl border-2 border-slate-200 focus-within:border-blue-500 transition-colors">
+              <Textarea
+                value={sourceText}
+                onChange={(e) => setSourceText(e.target.value)}
+                placeholder="Paste your long text here..."
+                className="h-full w-full resize-none bg-slate-50 border-none p-4 focus-visible:ring-0 outline-none"
+              />
+            </div>
+
             <Button
               onClick={handleSummarize}
               disabled={isLoading || !sourceText.trim()}
-              className="mt-4 w-full bg-blue-600 hover:bg-blue-700 flex-none"
+              className="shrink-0 w-full gap-2 bg-blue-600 hover:bg-blue-700 h-11"
             >
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                "Summarize Content"
+                <Sparkles className="h-4 w-4" />
               )}
+              Summarize Content
             </Button>
           </CardContent>
         </Card>
