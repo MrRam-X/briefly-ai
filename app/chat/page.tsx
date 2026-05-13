@@ -2,7 +2,7 @@
 
 import { useChat } from "@ai-sdk/react";
 import { UIMessage } from "ai";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,25 +12,33 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Sparkles, Loader2, User, Bot } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Send, Sparkles, Loader2, User, Bot, X } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useSearchParams } from "next/navigation";
 
 export default function ChatPage() {
+  const searchParams = useSearchParams();
   const [sourceText, setSourceText] = useState<string>("");
   const [chatInput, setChatInput] = useState<string>("");
 
-  // v6 usage: We destructure exactly what is available.
-  // If your IDE still complains about 'append', it is a package sync issue,
-  // but 'append' is the standard method in @ai-sdk/react.
+  // State to hold the active prompt from the Discover page
+  const [activePrompt, setActivePrompt] = useState<string | null>(() => {
+    // We check the URL immediately. If a prompt exists, it's the initial state.
+    return searchParams.get("prompt");
+  });
   const { messages, sendMessage, status } = useChat();
 
   const handleSummarize = async () => {
     if (!sourceText.trim()) return;
 
-    // v6: We append a message using the correct structure
+    const finalPrompt = activePrompt
+      ? `${activePrompt}\n\nSource Text:\n${sourceText}`
+      : `Please provide a professional summary of the following text:\n\n${sourceText}`;
+
     await sendMessage({
-      text: `Please provide a professional summary of the following text:\n\n${sourceText}`,
+      text: finalPrompt,
     });
   };
 
@@ -88,6 +96,31 @@ export default function ChatPage() {
                 className="h-full w-full resize-none bg-slate-50 border-none p-4 focus-visible:ring-0 outline-none"
               />
             </div>
+
+            {/* ACTIVE PROMPT BADGE: This is the key UX fix */}
+            {activePrompt && (
+              <div className="flex items-center justify-between bg-blue-50 border border-blue-100 p-2 rounded-lg animate-in fade-in slide-in-from-bottom-2">
+                <div className="flex items-center gap-2 overflow-hidden">
+                  <Badge
+                    variant="outline"
+                    className="bg-white text-blue-600 border-blue-200 shrink-0"
+                  >
+                    Active Prompt
+                  </Badge>
+                  <p className="text-xs text-blue-700 truncate italic">
+                    {`"${activePrompt.substring(0, 60)}..."`}
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 p-0 text-blue-400 hover:text-blue-600"
+                  onClick={() => setActivePrompt(null)}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
 
             <Button
               onClick={handleSummarize}
