@@ -42,23 +42,24 @@ export async function POST(req: Request) {
       };
     });
 
-    // Use the cleaned 'formattedMessages' array
     const result = await streamText({
-      model: groq("llama-3.1-8b-instant"),
-      messages: formattedMessages, // Pass the cleaned array here
+      model: groq("llama-3.3-70b-versatile"),
+      messages: formattedMessages,
       system: `You are Briefly AI, an expert editor. 
       Your ONLY job is to summarize the user's provided text. 
       
-      CRITICAL RULES:
-      1. DO NOT repeat the user's prompt.
-      2. DO NOT say "Here is the summary".
-      3. Start the response IMMEDIATELY with the summary.
-      4. Use bullet points for key takeaways.`,
+      STRICT FORMATTING RULES:
+      1. Use ONLY standard Markdown syntax for lists. 
+      2. EVERY list item MUST start with a hyphen and a space (e.g., "- Item text").
+      3. DO NOT use special bullet characters like "•", "◦", or "▪".
+      4. DO NOT repeat the user's prompt.
+      5. DO NOT use introductory phrases like "Here is the summary".
+      6. Start the response IMMEDIATELY with the summary.
+      7. Use bold headers (e.g., ### Key Takeaways) to separate sections.`,
     });
 
     // This sends the exact protocol that useChat v6 expects!
     return result.toUIMessageStreamResponse();
-    
   } catch (error: any) {
     console.error("💥 API Error:", error);
     return new Response(JSON.stringify({ error: error.message }), {
